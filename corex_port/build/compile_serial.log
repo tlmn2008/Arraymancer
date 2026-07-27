@@ -1,0 +1,80 @@
+Hint: used config file '/root/.choosenim/toolchains/nim-2.2.10/config/nim.cfg' [Conf]
+Hint: used config file '/root/.choosenim/toolchains/nim-2.2.10/config/config.nims' [Conf]
+Hint: used config file '/home/repos/Arraymancer/nim.cfg' [Conf]
+..........................................................................
+/root/.nimble/pkgs2/nimblas-0.3.1-e1ecdea4bb8176f12d66efd4aa0c7b3bea970027/nimblas/private/common.nim(52, 7) Hint: Using BLAS library matching pattern: lib(blas|cblas|openblas).so(|.3|.2|.1|.0) [User]
+....................................................................................
+/home/repos/Arraymancer/src/arraymancer/tensor/data_structure.nim(26, 46) Warning: imported and not used: 'check' [UnusedImport]
+......................................................................................
+/home/repos/Arraymancer/src/arraymancer/tensor/init_cuda.nim(16, 9) Warning: imported and not used: 'std_version_types' [UnusedImport]
+................
+/home/repos/Arraymancer/src/arraymancer/tensor/private/p_kernels_interface_cuda.nim(31, 8) Hint: 'cuda_asContiguous' is declared but not used [XDeclaredButNotUsed]
+/home/repos/Arraymancer/src/arraymancer/tensor/shapeshifting_cuda.nim(16, 18) Warning: imported and not used: 'p_init_cuda' [UnusedImport]
+...
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(15, 18) Warning: imported and not used: 'cuda_global_state' [UnusedImport]
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(16, 19) Warning: imported and not used: 'cuda' [UnusedImport]
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(17, 19) Warning: imported and not used: 'cublas' [UnusedImport]
+..........................................................
+/root/.nimble/pkgs2/nimlapack-0.3.1-fcb25795c6fb43f9251b7f34c3ad84c39e645afd/nimlapack.nim(20, 7) Hint: Using LAPACK library matching pattern: liblapack.so(|.3|.2|.1|.0) [User]
+....................................................................
+/home/repos/Arraymancer/tests/tensor/test_operators_blas_cuda.nim(17, 25) Warning: imported and not used: 'sugar' [UnusedImport]
+..
+/home/repos/Arraymancer/tests/tensor/test_shapeshifting_cuda.nim(16, 25) Warning: imported and not used: 'sugar' [UnusedImport]
+.
+/home/repos/Arraymancer/tests/tensor/test_broadcasting_cuda.nim(16, 25) Warning: imported and not used: 'sugar' [UnusedImport]
+/home/repos/Arraymancer/tests/tensor/test_broadcasting_cuda.nim(16, 32) Warning: imported and not used: 'sequtils' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(17, 15) Warning: imported and not used: 'arraymancer' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(18, 18) Warning: imported and not used: 'test_init_cuda' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(19, 18) Warning: imported and not used: 'test_operators_blas_cuda' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(20, 18) Warning: imported and not used: 'test_accessors_slicer_cuda' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(21, 18) Warning: imported and not used: 'test_shapeshifting_cuda' [UnusedImport]
+/home/repos/Arraymancer/tests/tests_cuda.nim(22, 18) Warning: imported and not used: 'test_broadcasting_cuda' [UnusedImport]
+Hint: /usr/local/corex/bin/clang++ -c -std=gnu++17 -funsigned-char  -x ivcore --cuda-gpu-arch=ivcore11 -Wno-unused-command-line-argument -Wno-deprecated -pthread -I/usr/local/corex/include -std=c++14   -I/root/.choosenim/toolchains/nim-2.2.10/lib -I/usr/local/corex/include -I/home/repos/Arraymancer/tests -o /home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp.o /home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp [Exec]
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:161:15: error: use of undeclared identifier 'noinline'; did you mean 'inline'?
+  161 | N_LIB_PRIVATE N_NOINLINE(void, callDepthLimitReached__system_u4541)(void);
+      |               ^
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:37: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                     ^
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:161:15: error: type name does not allow function specifier to be specified
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:37: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                     ^
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:161:15: error: expected expression
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:46: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                              ^
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:163:15: error: use of undeclared identifier 'noinline'; did you mean 'inline'?
+  163 | N_LIB_PRIVATE N_NOINLINE(void, rememberCycle__system_u3579)(NIM_BOOL isDestroyAction_p0, tyObject_RefHeader__649ag9cIptZKMuEi1Kv2XT9aQ* s_p1, TNimTypeV2* desc_p2);
+      |               ^
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:37: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                     ^
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:163:15: error: type name does not allow function specifier to be specified
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:37: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                     ^
+/home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp:163:15: error: expected expression
+/root/.choosenim/toolchains/nim-2.2.10/lib/nimbase.h:233:60: note: expanded from macro 'N_NOINLINE'
+  233 | #  define N_NOINLINE(rettype, name) rettype __attribute__((__noinline__)) name
+      |                                                            ^
+/usr/local/corex-4.5.0/include/IX/crt/host_defines.h:25:46: note: expanded from macro '__noinline__'
+   25 | #define __noinline__ __attribute__((noinline))
+      |                                              ^
+6 errors generated when compiling for ivcore11.
+Error: execution of an external program failed: '/usr/local/corex/bin/clang++ -c -std=gnu++17 -funsigned-char  -x ivcore --cuda-gpu-arch=ivcore11 -Wno-unused-command-line-argument -Wno-deprecated -pthread -I/usr/local/corex/include -std=c++14   -I/root/.choosenim/toolchains/nim-2.2.10/lib -I/usr/local/corex/include -I/home/repos/Arraymancer/tests -o /home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp.o /home/repos/Arraymancer/corex_port/build/nimcache_cuda/@psystem@sexceptions.nim.cpp'

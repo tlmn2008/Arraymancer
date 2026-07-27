@@ -1,0 +1,5 @@
+# Build intermediates (Nim-generated C++/object files) and compiled test binary.
+# These are large and reproducible from source via corex_port/build/build_command.txt;
+# only the human-readable logs / summaries are tracked.
+build/nimcache_cuda/
+build/tests_cuda

@@ -1,0 +1,36 @@
+{
+  "suite": "tests/tests_cuda.nim (Arraymancer CUDA tensor backend)",
+  "run_command": "nim cpp -d:cuda -d:ssl -r tests/tests_cuda.nim (built to corex_port/build/tests_cuda, run on Iluvatar BI-V150)",
+  "scope_note": "覆盖 CUDA 张量后端的完整默认测试集：test_init_cuda / test_operators_blas_cuda / test_accessors_slicer_cuda / test_shapeshifting_cuda / test_broadcasting_cuda。cuDNN 卷积用例需 -d:cudnn，因上游 import nimcuda/cudnn 与 nimcuda 0.2.2 版本漂移无法编译（见 blockers.json），不在本次可运行范围。",
+  "tests_run": 36,
+  "tests_passed": 33,
+  "tests_failed": 0,
+  "tests_skipped": 3,
+  "skipped_reasons": [
+    {
+      "reason": "float64-only CUDA tests: cublasD*/element-wise fp64 unsupported on ivcore11 (no true FP64)",
+      "count": 3,
+      "legitimate": true,
+      "note": "GEMV(float64→cublasDgemv)、Scalar/dot product(float64→cublasDdot) 返回 CUBLAS_STATUS_NOT_SUPPORTED；Addition-Substraction - slices(float64 element-wise) 按 fp32 精度得 5.0000007 等，精确 == 必不符。均为 ivcore11 无真 FP64 的硬件终结性边界，按 SOP 精度降级规则跳过。float32/float64 混合用例仅禁用 float64 断言、保留 float32 覆盖，故不计入跳过。"
+    }
+  ],
+  "metrics": [
+    {
+      "name": "tests_cuda_pass_rate",
+      "metric_type": "pass_rate",
+      "value": 1.0,
+      "unit": "ratio",
+      "config": "33 passed / 0 failed among 33 executed float32 cases (3 float64 cases skipped)",
+      "source": "corex_port/build/tests_cuda"
+    },
+    {
+      "name": "float32_gemm_correct",
+      "metric_type": "accuracy",
+      "value": 1.0,
+      "unit": "exact_match",
+      "reference": "CPU reference tensors",
+      "config": "float32 cublasSgemm/Sgemv, element-wise +/-/* kernels vs exact integer-valued expectations",
+      "source": "tests/tensor/test_operators_blas_cuda.nim"
+    }
+  ]
+}

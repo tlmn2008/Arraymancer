@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0",
+  "repo": "Arraymancer",
+  "target": "Iluvatar CoreX ivcore11 (BI-V150)",
+  "blockers": [
+    {
+      "id": "noinline-macro-clash",
+      "title": "CoreX host_defines.h 的 __noinline__ 宏与 Nim N_NOINLINE 冲突",
+      "symptom": "-x ivcore 模式下每个翻译单元编译失败：CoreX host_defines.h 定义对象宏 __noinline__，与 Nim nimbase.h 的 N_NOINLINE(rettype __attribute__((__noinline__)) name) 冲突，内层 __noinline__ 被二次展开为 __attribute__((__attribute__((noinline))))",
+      "category": "compiler",
+      "phase": "host-build",
+      "classification": "workaround-able",
+      "resolved": true,
+      "file": "nim.cfg",
+      "error_snippet": "error: use of undeclared identifier 'noinline'; type name does not allow function specifier to be specified",
+      "attempts": [
+        {"action": "新增 repo-local force-include 头 corex_ivcore_shim.h 逐 TU #undef __noinline__（__attribute__((__noinline__)) 本身合法，仅需去掉宏遮蔽；保留 __forceinline__，kernel 用到），nim.cfg 用 -include 注入", "result": "resolved"}
+      ],
+      "final_verdict": "force-include shim 后全部 TU 正常编译，未改动任何 SDK 文件"
+    },
+    {
+      "id": "nimcuda-cuda-path",
+      "title": "nimcuda 默认探测 /usr/local/cuda",
+      "symptom": "nimcuda CUDA 头文件自动探测指向 /usr/local/cuda（CoreX 上不存在），编译期报错",
+      "category": "build_system",
+      "phase": "host-build",
+      "classification": "workaround-able",
+      "resolved": true,
+      "file": "nim.cfg",
+      "error_snippet": "Could not find the cuda source headers! Please specify ... -d:CudaIncludes",
+      "attempts": [
+        {"action": "nim.cfg 增加 define:CudaIncludes=/usr/local/corex/include 与 define:CudaLib=/usr/local/corex/lib64 重定向到 CoreX SDK", "result": "resolved"}
+      ],
+      "final_verdict": "重定向到 CoreX SDK 后探测通过"
+    },
+    {
+      "id": "cudart-launch-symbols",
+      "title": "缺 libcudart 导致 kernel 启动符号未定义",
+      "symptom": "链接失败：undefined reference to ixLaunchKernel / __ixPopCallConfiguration（<<<>>> kernel 启动运行时符号）",
+      "category": "runtime",
+      "phase": "host-build",
+      "classification": "workaround-able",
+      "resolved": true,
+      "file": "nim.cfg",
+      "error_snippet": "/usr/bin/ld: undefined reference to `ixLaunchKernel' / `__ixPopCallConfiguration'",
+      "evidence": "nm -D /usr/local/corex/lib64/libcudart.so 可见相关符号",
+      "attempts": [
+        {"action": "nim.cfg passL 增加 -lcudart（cuBLAS/cudart 的 API 本身由 nimcuda dlopen，仅 kernel 启动运行时需链接）", "result": "resolved"}
+      ],
+      "final_verdict": "补 -lcudart 后链接成功"
+    },
+    {
+      "id": "fp64-unsupported",
+      "title": "ivcore11 无真 FP64",
+      "symptom": "float64 GEMM/GEMV/dot 的 cublasD* 返回 CUBLAS_STATUS_NOT_SUPPORTED；float64 element-wise 退化为 fp32 精度，精确 == 断言失败",
+      "category": "precision_fp64",
+      "phase": "runtime",
+      "classification": "terminal",
+      "resolved": false,
+      "file": "tests/tensor/test_operators_blas_cuda.nim",
+      "error_snippet": "Unhandled exception: CUBLAS_STATUS_NOT_SUPPORTED 15 [CublasError]; f64 1.0+4.0 -> 5.0000007; f64 2.0/2 -> 1.0000001",
+      "evidence": ["corex_port/test/diag_fp64.log 裸探针实测：float32 精确、float64 相对误差 ~1e-7~1e-6；cublasS* 全部正常、仅 cublasD* NOT_SUPPORTED"],
+      "why_terminal": "ivcore11 硬件无 FP64 运算单元，属硬件代差，不改 /usr/local/corex 无通用解",
+      "runtime_test_impact": "3 个纯 float64 用例按 SOP 精度降级跳过；float32/float64 混合用例仅禁用 float64 断言、保留 float32 覆盖",
+      "affected_tests": ["GEMV - General Matrix to Vector Multiplication (float64)", "Scalar/dot product (float64)", "Addition-Substraction - slices (float64)"],
+      "attempts": [
+        {"action": "裸探针对比 float32/float64 同一运算并检查 cublasS*/cublasD* 返回码", "result": "confirmed terminal"},
+        {"action": "按 SOP 精度降级：纯 float64 用例 unittest skip()，混合用例 when false 禁用 float64 断言保留 float32", "result": "float32 全通过"}
+      ],
+      "final_verdict": "ivcore11 硬件无 FP64，属终结性边界；float32 后端功能完整可用",
+      "ref": "iluvatar-cuda-base: double 静默 fp32 / cublas double NOT_SUPPORTED"
+    },
+    {
+      "id": "cudnn-version-drift",
+      "title": "cuDNN 后端与 nimcuda 版本漂移无法编译",
+      "symptom": "-d:cudnn 编译失败：上游 import nimcuda/cudnn 在 nimcuda 0.2.2 已不存在；重定向到 cuda8_0/cudnn 后撞类型系统不一致",
+      "category": "dependency",
+      "phase": "host-build",
+      "classification": "workaround-able",
+      "resolved": false,
+      "file": "src/arraymancer/nn_primitives/backend/cudnn.nim",
+      "error_snippet": "Error: cannot open file: nimcuda/cudnn；重定向后 type mismatch: check cudnnCreate(...) 无 cudnnStatus_t 重载",
+      "attempts": [
+        {"action": "把 import 从 nimcuda/cudnn 改为 nimcuda/cuda8_0/cudnn", "result": "failed：cuda12_5 的 check() 无 cudnnStatus_t 重载，cuda8_0 与 cuda12_5 的 cudaStream_t/driver_types 不同，需为 cuDNN 单独桥接一套 check 与流类型"},
+        {"action": "评估修复成本与范围", "result": "属上游 Arraymancer 与 nimcuda 版本漂移（非 CoreX 特有），需跨模块大改；判定超出 CUDA 张量后端迁移范围"}
+      ],
+      "final_verdict": "cuDNN 卷积路径超出本次范围，未纳入可运行测试；已还原 cudnn.nim 源码保持洁净，核心 CUDA 张量后端不受影响"
+    }
+  ]
+}

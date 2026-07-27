@@ -1,0 +1,6 @@
+# Run the compiled CUDA backend test binary on the Iluvatar BI-V150 GPU:
+./corex_port/build/tests_cuda
+# (equivalent to: nim cpp -d:cuda -d:ssl -r tests/tests_cuda.nim)
+# tests/tests_cuda.nim aggregates the 5 CUDA tensor-backend suites:
+#   test_init_cuda, test_operators_blas_cuda, test_accessors_slicer_cuda,
+#   test_shapeshifting_cuda, test_broadcasting_cuda

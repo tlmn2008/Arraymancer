@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "nim.cfg",
+      "action": "edit",
+      "reason": "CUDA 编译配置从 NVIDIA nvcc 切换到 CoreX clang++：cc=clang、clang.cpp.exe/linkerexe=/usr/local/corex/bin/clang++、options.always 由 -gencode ... --x cu 改为 -x ivcore --cuda-gpu-arch=ivcore11 并 force-include corex_ivcore_shim.h；cincludes/clibdir 指向 /usr/local/corex；define CudaIncludes/CudaLib 重定向 nimcuda 探测；passL 增加 -lcudart。原 nvcc 配置保留为注释。"
+    },
+    {
+      "path": "corex_ivcore_shim.h",
+      "action": "add",
+      "reason": "新增 repo-local force-include 头，-x ivcore 模式下 #undef CoreX host_defines.h 的 __noinline__ 宏，消除与 Nim nimbase.h N_NOINLINE 的冲突。"
+    },
+    {
+      "path": "tests/tensor/test_operators_blas_cuda.nim",
+      "action": "edit",
+      "reason": "按 SOP 精度降级处理 float64：GEMV、Scalar/dot product、Addition-Substraction-slices 三个纯 float64 用例用 unittest skip() 标记跳过（cublasD* NOT_SUPPORTED / fp32 精度）；GEMM 及若干 in-place/scalar 混合用例用 when false 仅禁用 float64 断言，保留并验证 float32 路径。"
+    },
+    {
+      "path": "tests/tensor/test_broadcasting_cuda.nim",
+      "action": "edit",
+      "reason": "两个 broadcasting 用例中的 float64 Float-division 子块用 when false 禁用（ivcore11 fp32 除法精度导致精确 == 失败），保留 float32 add/sub/mul/整数除法子块。"
+    }
+  ]
+}

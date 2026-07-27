@@ -1,0 +1,32 @@
+Hint: used config file '/root/.choosenim/toolchains/nim-2.2.10/config/nim.cfg' [Conf]
+Hint: used config file '/root/.choosenim/toolchains/nim-2.2.10/config/config.nims' [Conf]
+Hint: used config file '/home/repos/Arraymancer/nim.cfg' [Conf]
+..........................................................................
+/root/.nimble/pkgs2/nimblas-0.3.1-e1ecdea4bb8176f12d66efd4aa0c7b3bea970027/nimblas/private/common.nim(52, 7) Hint: Using BLAS library matching pattern: lib(blas|cblas|openblas).so(|.3|.2|.1|.0) [User]
+....................................................................................
+/home/repos/Arraymancer/src/arraymancer/tensor/data_structure.nim(26, 46) Warning: imported and not used: 'check' [UnusedImport]
+......................................................................................
+/home/repos/Arraymancer/src/arraymancer/tensor/init_cuda.nim(16, 9) Warning: imported and not used: 'std_version_types' [UnusedImport]
+................
+/home/repos/Arraymancer/src/arraymancer/tensor/private/p_kernels_interface_cuda.nim(31, 8) Hint: 'cuda_asContiguous' is declared but not used [XDeclaredButNotUsed]
+/home/repos/Arraymancer/src/arraymancer/tensor/shapeshifting_cuda.nim(16, 18) Warning: imported and not used: 'p_init_cuda' [UnusedImport]
+...
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(15, 18) Warning: imported and not used: 'cuda_global_state' [UnusedImport]
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(16, 19) Warning: imported and not used: 'cuda' [UnusedImport]
+/home/repos/Arraymancer/src/arraymancer/tensor/tensor_cuda.nim(17, 19) Warning: imported and not used: 'cublas' [UnusedImport]
+.......................
+/home/repos/Arraymancer/src/arraymancer/nn_primitives/backend/cudnn.nim(30, 3) Error: type mismatch
+Expression: check cudnnCreate(addr(result))
+  [1] cudnnCreate(addr(result)): cudnnStatus_t
+
+Expected one of (first mismatch at [position]):
+[1] func check(a: sink CUresult)
+[1] func check(a: sink cublasStatus_t)
+[1] func check(a: sink cudaError_t)
+[1] func check(a: sink cudaOccError)
+[1] func check(a: sink cufftResult)
+[1] func check(a: sink curandStatus)
+[1] func check(a: sink cusolverStatus_t)
+[1] func check(a: sink cusparseStatus_t)
+[1] func check(a: sink nvrtcResult)
+

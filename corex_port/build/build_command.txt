@@ -1,0 +1,14 @@
+# Iluvatar CoreX (ivcore11) build of the Arraymancer CUDA backend test suite.
+# Toolchain: CoreX clang++ 22.1.0 (4.5.0), Nim 2.2.10.
+# Env: source /etc/profile.d/corex.sh ; PATH includes /root/.nimble/bin ; CUDA_VISIBLE_DEVICES=0,1
+# All CUDA/build config is repo-local in nim.cfg (nvcc -> CoreX clang++, -x ivcore --cuda-gpu-arch=ivcore11)
+# plus the force-included corex_ivcore_shim.h.
+
+nim cpp -d:cuda -d:ssl --parallelBuild:1 \
+    --nimcache:corex_port/build/nimcache_cuda \
+    -o:corex_port/build/tests_cuda \
+    tests/tests_cuda.nim
+
+# cuDNN variant (-d:cudnn) does NOT build: upstream imports `nimcuda/cudnn`,
+# a module nimcuda 0.2.2 no longer ships (see corex_port/build/compile_cudnn.log
+# and corex_port/blockers.json). cuDNN is out of scope for this tensor-backend port.

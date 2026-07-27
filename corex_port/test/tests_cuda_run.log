@@ -1,0 +1,47 @@
+
+[Suite] Cuda init
+  [OK] Clone function
+
+[Suite] CUDA CuBLAS backend (Basic Linear Algebra Subprograms)
+  [OK] GEMM - General Matrix to Matrix Multiplication
+  [OK] GEMM - Bounds checking
+  [SKIPPED] GEMV - General Matrix to Vector Multiplication
+  [SKIPPED] Scalar/dot product
+  [OK] Matrix and Vector in-place addition
+  [OK] Matrix and Vector in-place substraction
+  [OK] Matrix and vector addition
+  [OK] Matrix and vector substraction
+  [SKIPPED] Addition-Substraction - slices
+  [OK] Multiplication/division by scalar
+
+[Suite] CUDA: Testing indexing and slice syntax
+  [OK] Basic slicing - foo[1..2, 3]
+  [OK] Basic slicing - foo[1+1..4, 3-2..2]
+  [OK] Span slices - foo[_, 3]
+  [OK] Span slices - foo[1.._, 3]
+  [OK] Span slices - foo[_..3, 3]
+  [OK] Span slices - foo[_.._, 3]
+  [OK] Stepping - foo[1..3|2, 3]
+  [OK] Span stepping - foo[_.._|2, 3]
+  [OK] Span stepping - foo[_.._|+2, 3]
+  [OK] Span stepping - foo[1.._|1, 2..3]
+  [OK] Span stepping - foo[_..<4|2, 3]
+  [OK] Slicing until at n from the end - foo[0..^4, 3]
+  [OK] Span Slicing until at n from the end - foo[_..^2, 3]
+  [OK] Stepped Slicing until at n from the end - foo[1..^1|2, 3]
+  [OK] Slice from the end - foo[^1..0|-1, 3]
+  [OK] Slice from the end - expect non-negative step error - foo[^1..0, 3]
+  [OK] Slice from the end - foo[^(2*2)..2*2, 3]
+  [OK] Slice from the end - foo[^3..^2, 3]
+
+[Suite] CUDA: Shapeshifting
+  [OK] Unsafe reshape
+
+[Suite] CUDA: Shapeshifting - broadcasting and non linear algebra elementwise operations
+  [OK] Tensor element-wise multiplication (Hadamard product) and division
+  [OK] Implicit tensor-tensor broadcasting - basic operations +., -., *., ./, .^
+  [OK] Implicit tensor-tensor broadcasting - basic in-place operations +.=, -.=, *.=, /.=
+  [OK] Implicit tensor-scalar broadcasting - basic operations +., -.
+  [OK] Implicit scalar-tensor broadcasting - basic operations +., -., ./
+  [OK] Implicit tensor-scalar broadcasting - basic operations +.=, -.=
+CuDNN tests skipped, please pass -d:cudnn flag if you want to enable cudnn tests after cuda tests.

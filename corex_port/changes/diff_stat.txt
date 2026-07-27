@@ -1,0 +1,5 @@
+ nim.cfg                                   |  49 ++++++++-----
+ tests/tensor/test_broadcasting_cuda.nim   |  38 ++++++----
+ tests/tensor/test_operators_blas_cuda.nim | 115 ++++++++++++++++++++----------
+ 3 files changed, 133 insertions(+), 69 deletions(-)
+corex_ivcore_shim.h (new file)

@@ -1,0 +1,48 @@
+{
+  "repo_name": "Arraymancer",
+  "repo_url": "https://github.com/mratsim/Arraymancer",
+  "source_commit": "d3b67712a3334ab4ded2809cc793e9cd7fed5fae",
+  "source_commit_date": "2026-05-26T22:28:53+02:00",
+  "source_branch": "master",
+  "migration_started_at": "2026-07-27T11:00:00Z",
+  "migration_finished_at": "2026-07-27T14:40:00Z",
+  "sdk_version": "/usr/local/corex (IX-ML 4.4.0, Driver 4.5.0, CUDA 10.2, clang 22.1.0)",
+  "skill_version": "corex-CUDA-compatible-migration@1.0",
+
+  "compile_status": "success",
+  "test_status": "partial_pass",
+  "overall_status": "partial",
+  "tests_run": 36,
+  "tests_passed": 33,
+  "tests_failed": 0,
+  "tests_skipped": 3,
+
+  "summary": "把 Nim 张量库 Arraymancer 的 CUDA 后端迁移到 Iluvatar CoreX (ivcore11)。上游用 nvcc 编 .cu 并调用 cuBLAS/cuDNN；本次全程改用 CoreX clang++（-x ivcore --cuda-gpu-arch=ivcore11），cuBLAS 走 CoreX 的 ixBLAS（保留 cublas API），kernel 走 CoreX 运行时。核心张量 CUDA 后端（cuBLAS + 自定义 element-wise kernel）编译、链接、上机全部成功，float32 用例 33 项全过。float64 因 ivcore11 无真 FP64 属硬件终结性边界：cublasD* 返回 NOT_SUPPORTED、element-wise 双精度退化为 fp32 精度，3 个纯 float64 用例按 SOP 跳过。cuDNN 路径因上游与 nimcuda 版本漂移无法编译，超出本次张量后端迁移范围。",
+  "key_adaptations": [
+    "nim.cfg 的 CUDA 段从 nvcc 全面切换到 CoreX clang++：cc=clang、clang.cpp.exe/linkerexe=/usr/local/corex/bin/clang++、编译选项由 -gencode ... --x cu 改为 -x ivcore --cuda-gpu-arch=ivcore11。",
+    "新增 repo-local force-include 头 corex_ivcore_shim.h：ivcore 模式下 CoreX host_defines.h 定义的宏 __noinline__ 与 Nim nimbase.h 的 N_NOINLINE(__attribute__((__noinline__))) 冲突，逐 TU #undef __noinline__ 解决（保留 __forceinline__，kernel 需要）。",
+    "nimcuda 的 CUDA 自动探测默认指向 /usr/local/cuda，用 -d:CudaIncludes / -d:CudaLib 重定向到 /usr/local/corex（写入 nim.cfg）。",
+    "链接补 -lcudart：<<<>>> kernel 启动生成的 ixLaunchKernel / __ixPushCallConfiguration 等 CoreX 运行时符号在 libcudart 中（cuBLAS/cudart API 本身由 nimcuda dlopen）。",
+    "按 SOP 处理 float64：cublasDgemm/Dgemv/Ddot 在 ivcore11 返回 CUBLAS_STATUS_NOT_SUPPORTED，element-wise 双精度退化为 fp32；对纯 float64 用例用 unittest skip() 标记跳过，对 float32/float64 混合用例仅禁用 float64 断言（when false）保留 float32 覆盖。"
+  ],
+  "terminal_blockers": [
+    "ivcore11 无真 FP64：float64 GEMM/GEMV/dot 的 cublasD* 例程返回 CUBLAS_STATUS_NOT_SUPPORTED；float64 element-wise 运算按 fp32 精度执行（如 1.0+4.0 得 5.0000007），与精确 == 比较必然不符。属硬件代差，环境内不可解，对应 3 个跳过用例。"
+  ],
+  "workaround_blockers": [
+    "cuDNN 后端 (-d:cudnn) 无法编译：上游 cudnn.nim import nimcuda/cudnn，而 nimcuda 0.2.2 已不提供该路径（现为 nimcuda/cuda8_0/cudnn）。尝试重定向到 cuda8_0/cudnn 后又撞类型系统不一致（cuda12_5 的 check 无 cudnnStatus_t 重载、cuda8_0 与 cuda12_5 的 cudaStream_t 类型不同）。属上游与 nimcuda 版本漂移、非 CoreX 特有，需跨模块大改，超出 CUDA 张量后端迁移范围，已还原源码保持洁净。"
+  ],
+
+  "github": {
+    "fork_url": "https://github.com/tlmn2008/Arraymancer",
+    "branch": "corex-port",
+    "default_branch": "corex-port",
+    "default_branch_status": "not_attempted",
+    "compare_url": "https://github.com/tlmn2008/Arraymancer/compare/master...corex-port",
+    "push_status": "pending"
+  },
+
+  "local_logs": {
+    "compile_log": "/home/repos/Arraymancer/corex_port/build/compile.log",
+    "test_log": "/home/repos/Arraymancer/corex_port/test/test.log"
+  }
+}
