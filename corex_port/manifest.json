@@ -36,9 +36,11 @@
     "fork_url": "https://github.com/tlmn2008/Arraymancer",
     "branch": "corex-port",
     "default_branch": "corex-port",
-    "default_branch_status": "not_attempted",
+    "default_branch_status": "success",
     "compare_url": "https://github.com/tlmn2008/Arraymancer/compare/master...corex-port",
-    "push_status": "pending"
+    "push_commit": "413bc70da0721680ae249e8d03b37f834ae9fb14",
+    "push_status": "success",
+    "pushed_at": "2026-07-27T14:55:00Z"
   },
 
   "local_logs": {
