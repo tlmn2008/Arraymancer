@@ -46,8 +46,9 @@
     "push_commit": "413bc70da0721680ae249e8d03b37f834ae9fb14",
     "push_status": "success",
     "pushed_at": "2026-07-27T14:55:00Z",
-    "guarded_push_commit": "PENDING",
-    "guarded_push_status": "pending"
+    "guarded_push_commit": "bce656b9080d27a3b28cfa7e2d736c0ab3b40104",
+    "guarded_push_status": "success",
+    "guarded_pushed_at": "2026-07-28T07:50:00Z"
   },
   "local_logs": {
     "compile_log": "/home/repos/Arraymancer/corex_port/build/compile.log",
