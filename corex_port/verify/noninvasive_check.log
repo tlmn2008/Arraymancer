@@ -1,0 +1,38 @@
+# 非侵入式(guarded)验证 — Arraymancer corex-port-guarded
+# 生成时间: 2026-07-28T07:34:42Z
+# source_commit: d3b67712a3334ab4ded2809cc793e9cd7fed5fae (master)
+
+==================================================================
+[A] 默认构建(不带 -d:corex): nim.cfg 走上游 NVIDIA nvcc 配置
+    命令: nim cpp -d:cuda -d:ssl --listcmd ...  (未加 -d:corex)
+    说明: 本环境无 /usr/local/cuda, 为让 nimcuda 头文件探测通过而仅额外
+          传入 -d:CudaIncludes/-d:CudaLib(nimcuda 定义, 与 corex 守卫无关);
+          编译器与 CUDA 架构标志仍为上游 nvcc 原配置。
+------------------------------------------------------------------
+CC: system/exceptions.nim: /opt/cuda/bin/nvcc -c -std=gnu++17 -funsigned-char  -gencode arch=compute_61,code=sm_61 -gencode arch=compute_75,code=sm_75 --x cu -Xcompiler -fpermissive -pthread -I/usr/local/corex/include -std=c++14 -I.../nim-2.2.10/lib -I/opt/cuda/include -I/home/repos/Arraymancer/tests -o ...
+(注: 每个 .cpp 翻译单元均由该编译器编译; 因本机无 nvcc, 编译在首个 nvcc 调用处失败, 但命令行已证明默认走上游 nvcc。-I/usr/local/corex/include 仅因手动传 -d:CudaIncludes 而来, 与 corex 守卫无关。)
+
+    => 编译器 = /opt/cuda/bin/nvcc, 标志 = -gencode arch=compute_61,code=sm_61
+       -gencode arch=compute_75,code=sm_75 --x cu -Xcompiler -fpermissive (上游原样)
+       未出现 /usr/local/corex/bin/clang++ 或 -x ivcore --cuda-gpu-arch=ivcore11
+
+==================================================================
+[B] -d:corex 构建: nim.cfg 走 CoreX clang++ 分支
+------------------------------------------------------------------
+/usr/local/corex/bin/clang++ -c -std=gnu++17 -funsigned-char  -x ivcore --cuda-gpu-arch=ivcore11 -include corex_ivcore_shim.h -Wno-unused-command-line-argument -Wno-deprecated -pthread -I/usr/local/corex/include -std=c++14 -I.../nim-2.2.10/lib -I/usr/local/corex/include -I/home/repos/Arraymancer -I/home/repos/Arraymancer/tests -o ...
+(注: -include corex_ivcore_shim.h 经 cincludes:"$config"(= nim.cfg 所在的仓库根)解析, 无需绝对路径。)
+
+==================================================================
+[C] 源码守卫: float64 用例仅在 -d:corex 时被 skip/禁用, 默认编入完整 float64 路径
+    对比同一翻译单元生成的 C++ 行数(默认 vs -d:corex):
+------------------------------------------------------------------
+  test_operators_blas_cuda.cpp  默认=8777 行  -d:corex=7065 行 (默认多出 float64 用例体)
+  test_broadcasting_cuda.cpp    默认=6231 行  -d:corex=5846 行 (默认多出 float64 除法块)
+
+==================================================================
+[D] 本环境局限
+------------------------------------------------------------------
+  本机为 Iluvatar BI-V150(2 卡), 无 NVIDIA GPU 亦无 nvcc, 故默认(NVIDIA)
+  路径无法真正编译/运行到底; 上述以'默认配置文本=上游 nvcc 原配置 + 生成
+  C++ 含完整 float64 路径'的走查佐证非侵入性。CoreX(-d:corex)路径为真机
+  编译+上机运行(见 test/test.log)。

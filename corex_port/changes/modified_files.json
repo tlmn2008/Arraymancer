@@ -1,0 +1,27 @@
+{
+  "branch": "corex-port-guarded",
+  "base_commit": "d3b67712a3334ab4ded2809cc793e9cd7fed5fae",
+  "guarding": "所有 CoreX 改动均以 @if corex (nim.cfg) / when defined(corex) (源码) 门控；默认不带 -d:corex 时逐字等于上游。",
+  "files": [
+    {
+      "path": "nim.cfg",
+      "action": "edit",
+      "reason": "CUDA 编译段用 @if corex/@else 条件守卫。@if corex 分支：CoreX clang++（clang.cpp.exe/linkerexe=/usr/local/corex/bin/clang++、options.always=-x ivcore --cuda-gpu-arch=ivcore11 -include corex_ivcore_shim.h）、cincludes 含 $config(仓库根)与 /usr/local/corex/include、clibdir、define CudaIncludes/CudaLib、passL -lcudart。@else 分支：上游 NVIDIA nvcc 原配置逐字未改（-gencode arch=compute_61/75 --x cu -Xcompiler -fpermissive）。默认(不带 -d:corex)走 @else，NVIDIA 路径零回归。"
+    },
+    {
+      "path": "corex_ivcore_shim.h",
+      "action": "add",
+      "reason": "CoreX 专用 repo-local force-include 头，仅在 @if corex 分支通过裸名 -include 注入（经 cincludes:\"$config\" 解析，无绝对路径）。-x ivcore 模式下 #undef CoreX host_defines.h 的 __noinline__ 宏，消除与 Nim nimbase.h N_NOINLINE 的冲突。默认 nvcc 路径从不引用该头。"
+    },
+    {
+      "path": "tests/tensor/test_operators_blas_cuda.nim",
+      "action": "edit",
+      "reason": "float64 让步全部条件守卫。纯 float64 用例（GEMV、Scalar/dot product、Addition-Substraction-slices）用 when defined(corex): skip() else: <原 float64 体>；GEMM float64 子例及若干 in-place/scalar 混合用例用 when not defined(corex): <原 float64 断言>，保留并验证 float32 路径。默认(不带 -d:corex)编入并执行完整 float64 路径。"
+    },
+    {
+      "path": "tests/tensor/test_broadcasting_cuda.nim",
+      "action": "edit",
+      "reason": "两个 broadcasting 用例中的 float64 Float-division 子块用 when not defined(corex) 守卫（ivcore11 fp32 除法精度导致精确 == 失败），保留 float32 add/sub/mul/整数除法子块。默认(不带 -d:corex)编入完整 float64 除法块。"
+    }
+  ]
+}

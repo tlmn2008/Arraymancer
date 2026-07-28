@@ -1,0 +1,9 @@
+# git diff d3b67712a3334ab4ded2809cc793e9cd7fed5fae corex-port-guarded -- . ':(exclude)corex_port'
+# 非侵入式(guarded)重构版：所有 CoreX 改动均以 @if corex / when defined(corex) 门控，
+# 默认(不带 -d:corex)逐字等于上游。
+ corex_ivcore_shim.h                       |  22 ++++++
+ nim.cfg                                   |  76 +++++++++++++-----
+ tests/tensor/test_broadcasting_cuda.nim   |  40 ++++++----
+ tests/tensor/test_operators_blas_cuda.nim | 127 +++++++++++++++++++++---------
+ 4 files changed, 192 insertions(+), 73 deletions(-)
+corex_ivcore_shim.h (new file, CoreX-only, 仅在 @if corex 分支 force-include)

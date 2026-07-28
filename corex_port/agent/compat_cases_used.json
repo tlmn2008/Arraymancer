@@ -1,0 +1,29 @@
+{
+  "compat_cases": [
+    {
+      "case": "double 静默 fp32 / no true FP64",
+      "source": "iluvatar-cuda-base: 编程限制速查表 (double 静默 fp32) + sdk-api-diffs (cublas double)",
+      "applied": "确认 float64 element-wise 退化为 fp32 精度、cublasD* 返回 NOT_SUPPORTED，按 SOP 跳过/禁用 float64 用例。"
+    },
+    {
+      "case": "nvcc -> corex clang 编译选项翻译",
+      "source": "iluvatar-cuda-base: 迁移/构建 nvcc-flag-translation",
+      "applied": "nim.cfg 将 -gencode arch=... --x cu 替换为 -x ivcore --cuda-gpu-arch=ivcore11，禁用 nvcc。"
+    },
+    {
+      "case": "-x ivcore 而非 -x cuda",
+      "source": "CoreX clang 提示 'when compiling *.cu for ivcore -x cuda need replace with -x ivcore'",
+      "applied": "编译模式统一用 -x ivcore（探针验证 -x cuda 会告警、-x ivcore 干净）。"
+    },
+    {
+      "case": "corex nvcc 是 shell stub / 禁用 nvcc",
+      "source": "iluvatar-cuda-base: nvcc-shell-stub-detect",
+      "applied": "全程不使用 nvcc，改 CoreX clang++ 直接编译 Nim 生成的 .cpp。"
+    }
+  ],
+  "new_case_candidate": {
+    "symptom": "Nim(nimbase.h) N_NOINLINE 的 __attribute__((__noinline__)) 在 -x ivcore 模式被 CoreX host_defines.h 的 __noinline__ 宏二次展开为 __attribute__((__attribute__((noinline)))) -> 编译失败",
+    "workaround": "force-include 头逐 TU #undef __noinline__（保留 __forceinline__）",
+    "note": "任何用 CoreX clang -x ivcore 编译 Nim 生成 C++ 的项目都会命中；建议回流 iluvatar-cuda-base。"
+  }
+}

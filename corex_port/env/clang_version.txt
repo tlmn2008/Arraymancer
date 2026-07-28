@@ -1,0 +1,10 @@
+clang version 22.1.0git (4.5.0.20260630 a526c4d94919b0feb06f49a88a749e075a7f5cf3)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /usr/local/corex-4.5.0/bin
+Nim Compiler Version 2.2.10 [Linux: amd64]
+Compiled at 2026-04-24
+Copyright (c) 2006-2026 by Andreas Rumpf
+
+git hash: bfeb3146d1638b39f69007a4ae5a23e23ae4e5ef
+active boot switches: -d:release
