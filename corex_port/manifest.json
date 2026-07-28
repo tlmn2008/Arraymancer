@@ -8,7 +8,6 @@
   "migration_finished_at": "2026-07-27T14:40:00Z",
   "sdk_version": "/usr/local/corex (IX-ML 4.4.0, Driver 4.5.0, CUDA 10.2, clang 22.1.0)",
   "skill_version": "corex-CUDA-compatible-migration@1.0",
-
   "compile_status": "success",
   "test_status": "partial_pass",
   "overall_status": "partial",
@@ -16,7 +15,6 @@
   "tests_passed": 33,
   "tests_failed": 0,
   "tests_skipped": 3,
-
   "summary": "把 Nim 张量库 Arraymancer 的 CUDA 后端迁移到 Iluvatar CoreX (ivcore11)。上游用 nvcc 编 .cu 并调用 cuBLAS/cuDNN；本次全程改用 CoreX clang++（-x ivcore --cuda-gpu-arch=ivcore11），cuBLAS 走 CoreX 的 ixBLAS（保留 cublas API），kernel 走 CoreX 运行时。核心张量 CUDA 后端（cuBLAS + 自定义 element-wise kernel）编译、链接、上机全部成功，float32 用例 33 项全过。float64 因 ivcore11 无真 FP64 属硬件终结性边界：cublasD* 返回 NOT_SUPPORTED、element-wise 双精度退化为 fp32 精度，3 个纯 float64 用例按 SOP 跳过。cuDNN 路径因上游与 nimcuda 版本漂移无法编译，超出本次张量后端迁移范围。",
   "key_adaptations": [
     "nim.cfg 的 CUDA 段从 nvcc 全面切换到 CoreX clang++：cc=clang、clang.cpp.exe/linkerexe=/usr/local/corex/bin/clang++、编译选项由 -gencode ... --x cu 改为 -x ivcore --cuda-gpu-arch=ivcore11。",
@@ -31,7 +29,12 @@
   "workaround_blockers": [
     "cuDNN 后端 (-d:cudnn) 无法编译：上游 cudnn.nim import nimcuda/cudnn，而 nimcuda 0.2.2 已不提供该路径（现为 nimcuda/cuda8_0/cudnn）。尝试重定向到 cuda8_0/cudnn 后又撞类型系统不一致（cuda12_5 的 check 无 cudnnStatus_t 重载、cuda8_0 与 cuda12_5 的 cudaStream_t 类型不同）。属上游与 nimcuda 版本漂移、非 CoreX 特有，需跨模块大改，超出 CUDA 张量后端迁移范围，已还原源码保持洁净。"
   ],
-
+  "upstream_assessment": {
+    "upstreamable": "no",
+    "nvidia_compatible": "broken",
+    "notes": "nim.cfg 的 CUDA 段被就地重写为 CoreX clang++/-x ivcore --cuda-gpu-arch=ivcore11 并硬编码 /usr/local/corex 路径与绝对路径 force-include shim，原 nvcc 配置仅注释保留;拿到 NVIDIA 上需手工恢复配置，且绑定 vendor SDK 路径，无独立回上游价值。FP64 为硬件 terminal(3 例跳过)。本仓无 fork remote，未推送。"
+  },
+  "bugfixes": [],
   "github": {
     "fork_url": "https://github.com/tlmn2008/Arraymancer",
     "branch": "corex-port",
@@ -42,7 +45,6 @@
     "push_status": "success",
     "pushed_at": "2026-07-27T14:55:00Z"
   },
-
   "local_logs": {
     "compile_log": "/home/repos/Arraymancer/corex_port/build/compile.log",
     "test_log": "/home/repos/Arraymancer/corex_port/test/test.log"
