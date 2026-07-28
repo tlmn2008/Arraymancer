@@ -30,9 +30,8 @@
     "cuDNN 后端 (-d:cudnn) 无法编译：上游 cudnn.nim import nimcuda/cudnn，而 nimcuda 0.2.2 已不提供该路径（现为 nimcuda/cuda8_0/cudnn）。尝试重定向到 cuda8_0/cudnn 后又撞类型系统不一致（cuda12_5 的 check 无 cudnnStatus_t 重载、cuda8_0 与 cuda12_5 的 cudaStream_t 类型不同）。属上游与 nimcuda 版本漂移、非 CoreX 特有，需跨模块大改，超出 CUDA 张量后端迁移范围，已还原源码保持洁净。"
   ],
   "upstream_assessment": {
-    "upstreamable": "no",
-    "nvidia_compatible": "broken",
-    "notes": "nim.cfg 的 CUDA 段被就地重写为 CoreX clang++/-x ivcore --cuda-gpu-arch=ivcore11 并硬编码 /usr/local/corex 路径与绝对路径 force-include shim，原 nvcc 配置仅注释保留;拿到 NVIDIA 上需手工恢复配置，且绑定 vendor SDK 路径，无独立回上游价值。FP64 为硬件 terminal(3 例跳过)。本仓无 fork remote，未推送。"
+    "upstream_status": "needs_guarding",
+    "notes": "nim.cfg 的 CUDA 段被就地重写为 CoreX clang++/-x ivcore --cuda-gpu-arch=ivcore11 并硬编码 /usr/local/corex 路径与绝对路径 force-include shim,原 nvcc 配置仅注释保留——就地替换会回归 NVIDIA。回上游须重构成条件配置(按编译器/环境探测分支,去硬编码 vendor 路径)方可合。FP64 为硬件 terminal(3 例跳过)。本仓无 fork remote,未推送。"
   },
   "bugfixes": [],
   "github": {
