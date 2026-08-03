@@ -1,11 +1,9 @@
 {
-  "suite": "tests/tests_cuda.nim (Arraymancer CUDA tensor backend)",
-  "run_command": "nim cpp -d:cuda -d:corex -d:ssl --nimcache:corex_port/build/nimcache_cuda -o:corex_port/build/tests_cuda tests/tests_cuda.nim && ./corex_port/build/tests_cuda (guarded refactor 版, 带 -d:corex 开关启用 CoreX 分支; 真机 Iluvatar BI-V150 上机运行)",
-  "scope_note": "覆盖 CUDA 张量后端的完整默认测试集：test_init_cuda / test_operators_blas_cuda / test_accessors_slicer_cuda / test_shapeshifting_cuda / test_broadcasting_cuda。本次为非侵入式(guarded)重构后的重新验证：CoreX 改动全部由 -d:corex 门控(nim.cfg @if corex/@else + 源码 when defined(corex))，本运行带 -d:corex 启用 CoreX 分支，结果与就地版一致(33 过/0 失/3 跳)。cuDNN 卷积用例需 -d:cudnn，因上游 import nimcuda/cudnn 与 nimcuda 0.2.2 版本漂移无法编译（见 blockers.json），不在本次可运行范围。",
   "tests_run": 36,
   "tests_passed": 33,
   "tests_failed": 0,
   "tests_skipped": 3,
+  "run_command": "nim cpp -d:cuda -d:corex -d:ssl --nimcache:corex_port/build/nimcache_cuda -o:corex_port/build/tests_cuda tests/tests_cuda.nim && ./corex_port/build/tests_cuda (guarded refactor 版, 带 -d:corex 开关启用 CoreX 分支; 真机 Iluvatar BI-V150 上机运行)",
   "skipped_reasons": [
     {
       "reason": "float64-only CUDA tests: cublasD*/element-wise fp64 unsupported on ivcore11 (no true FP64)",
@@ -32,5 +30,6 @@
       "config": "float32 cublasSgemm/Sgemv, element-wise +/-/* kernels vs exact integer-valued expectations",
       "source": "tests/tensor/test_operators_blas_cuda.nim"
     }
-  ]
+  ],
+  "notes": "suite: tests/tests_cuda.nim (Arraymancer CUDA tensor backend)\nscope_note: 覆盖 CUDA 张量后端的完整默认测试集：test_init_cuda / test_operators_blas_cuda / test_accessors_slicer_cuda / test_shapeshifting_cuda / test_broadcasting_cuda。本次为非侵入式(guarded)重构后的重新验证：CoreX 改动全部由 -d:corex 门控(nim.cfg @if corex/@else + 源码 when defined(corex))，本运行带 -d:corex 启用 CoreX 分支，结果与就地版一致(33 过/0 失/3 跳)。cuDNN 卷积用例需 -d:cudnn，因上游 import nimcuda/cudnn 与 nimcuda 0.2.2 版本漂移无法编译（见 blockers.json），不在本次可运行范围。"
 }

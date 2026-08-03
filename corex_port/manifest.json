@@ -24,12 +24,6 @@
     "nimcuda 的 CUDA 自动探测重定向(define:CudaIncludes/CudaLib=/usr/local/corex/...)与 -lcudart 链接(<<<>>> kernel 启动的 ixLaunchKernel/__ixPushCallConfiguration 等 CoreX 运行时符号在 libcudart)均置于 @if corex 分支内；默认路径不受影响。",
     "float64 精度让步全部条件守卫：cublasDgemm/Dgemv/Ddot 在 ivcore11 返回 CUBLAS_STATUS_NOT_SUPPORTED、element-wise 双精度退化为 fp32。纯 float64 用例用 when defined(corex): skip() else: <原 float64 体>；float32/float64 混合用例用 when not defined(corex): <原 float64 断言>。默认(不带 -d:corex)编入并执行完整 float64 路径，仅 -d:corex 时跳过/禁用。"
   ],
-  "terminal_blockers": [
-    "ivcore11 无真 FP64：float64 GEMM/GEMV/dot 的 cublasD* 例程返回 CUBLAS_STATUS_NOT_SUPPORTED；float64 element-wise 运算按 fp32 精度执行（如 1.0+4.0 得 5.0000007），与精确 == 比较必然不符。属硬件代差，环境内不可解，对应 3 个跳过用例。"
-  ],
-  "workaround_blockers": [
-    "cuDNN 后端 (-d:cudnn) 无法编译：上游 cudnn.nim import nimcuda/cudnn，而 nimcuda 0.2.2 已不提供该路径（现为 nimcuda/cuda8_0/cudnn）。尝试重定向到 cuda8_0/cudnn 后又撞类型系统不一致（cuda12_5 的 check 无 cudnnStatus_t 重载、cuda8_0 与 cuda12_5 的 cudaStream_t 类型不同）。属上游与 nimcuda 版本漂移、非 CoreX 特有，需跨模块大改，超出 CUDA 张量后端迁移范围，已还原源码保持洁净。"
-  ],
   "upstream_assessment": {
     "upstream_status": "ready",
     "notes": "已从就地替换重构为非侵入式条件守卫,default(不带 -d:corex)逐字等于上游。(1) nim.cfg 的 CUDA 段用 @if corex/@else 门控:@else 为上游 nvcc 原配置(-gencode arch=compute_61/75 --x cu -Xcompiler -fpermissive、/opt/cuda/bin/nvcc),走查已证实默认构建选中 nvcc 且不出现 clang++/-x ivcore;@if corex 才启用 CoreX clang++。(2) 源码 float64 让步全部包在 when defined(corex)/when not defined(corex),默认编入完整 float64 路径(生成 C++ 行数 default > -d:corex 佐证)。(3) force-include shim 为 CoreX 专用、仅在 corex 分支引用,且用 $config 去绝对路径。故 NVIDIA 路径零回归、改动可直接 PR。本环境无 NVIDIA 卡/nvcc,默认路径无法真编到底,仅以配置文本+生成 C++ 走查佐证(见 corex_port/verify/noninvasive_check.log);CoreX 路径为真机编译+上机运行(见 test/test.log)。FP64 为 ivcore11 硬件 terminal(3 例守卫跳过)。守卫分支 corex-port-guarded 推送至 fork。"
